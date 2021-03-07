@@ -4,63 +4,68 @@
 int main(void)
 {
 
+
 	FILE* settings = fopen("settings.txt", "r");
-	char screen[width*6][height*3], input = '\0';
+	char screen[width*6][height*3] = {'\0'}, input = '\0';
 	char TestText[] = "This is test text, and I'm making it long to see what happens :)";
 	int tile_ids[width][height], ref[width][height], tile_frequency[100] = { 0 };
-	
+
+
 	struct tile* Dummy;
 	Dummy = (struct tile*)malloc(sizeof(struct tile));
-	(Dummy+0)->id = 0;
-	//Dummy->file = malloc(20 * sizeof(char));
-	(Dummy)->file[0] = "Dummy.txt";
-	strcpy((Dummy)->file, "Dummy.txt");
-	(Dummy)->layout = malloc(3 * sizeof(char*)); // allocates one dimension
+    Dummy->id = 0;
+    Dummy->file = (char*)malloc(20*sizeof(char));
+    Dummy->file = "Dummy.txt";
+	Dummy->layout = (char**)malloc(3 * sizeof(char*)); // allocates one dimension
 	for (int j = 0; j < 6; j++)
 	{
-		(Dummy)->layout[j] = malloc(3 * sizeof(char*)); // allocates the second dimension
+		Dummy->layout[j] = (char*)malloc(3 * sizeof(char)); // allocates the second dimension
 	}
-	(Dummy)->asset = fopen("Dummy.txt", "r");
-	//Dummy->flags = malloc(2 * sizeof(char));
-	(Dummy)->flags[0] = '\0';
-	(Dummy)->flags[1] = '\0';
+	Dummy->flags[0] = '\0';
+	Dummy->flags[1] = '\0';
+    printf("Made it through dummy declaration\n");
 
 	init_tile_pointer(Dummy);
-	load_tile(Dummy);
+    printf("Made it through init dummy\n");
 
 	struct tile* Player_global;
 	Player_global = (struct tile*)malloc(sizeof(struct tile));
-	(Player_global)->id = 1;
-	//Player_global.file = malloc(20 * sizeof(char));
-	(Player_global)->file[0] = "PlayerTile.txt";
-	strcpy((Player_global)->file, "PlayerTile.txt");
+	Player_global->id = 1;
+    Player_global->file = (char*)malloc(20*sizeof(char));
+	Player_global->file = "PlayerTile.txt";
+
 
 	struct tile* TestTile_global;
 	TestTile_global = (struct tile*)malloc(sizeof(struct tile));
-	(TestTile_global)->id = 2;
-	//TestTile_global.file = malloc(20 * sizeof(char));
-	(TestTile_global)->file[0] = "TestTile.txt";
-	strcpy((TestTile_global)->file, "TestTile.txt");
+	TestTile_global->id = 2;
+    TestTile_global->file = (char*)malloc(20*sizeof(char));
+	TestTile_global->file = "TestTile.txt";
+
 
 	struct tile* TestTile2_global;
 	TestTile2_global = (struct tile*)malloc(sizeof(struct tile));
-	(TestTile2_global)->id = 3;
-	//TestTile2_global.file = malloc(21 * sizeof(char));
-	(TestTile2_global)->file[0] = "TestTile2.txt";
-	strcpy((TestTile2_global)->file, "TestTile2.txt");
+	TestTile2_global->id = 3;
+    TestTile2_global->file = (char*)malloc(20*sizeof(char));
+	TestTile2_global->file = "TestTile2.txt";
+
 
 	struct tile* Door_global;
 	Door_global = (struct tile*)malloc(sizeof(struct tile));
-	(Door_global)->id = 4;
-	//Door_global.file = malloc(20 * sizeof(char));
-	(Door_global)->file[0] = "TestDoor.txt";
-	strcpy((Door_global)->file, "TestDoor.txt");
+	Door_global->id = 4;
+    Door_global->file = (char*)malloc(20*sizeof(char));
+	Door_global->file = "TestDoor.txt";
 
-	struct tile Tiles[100] = {Dummy, Player_global, TestTile_global, TestTile2_global, Door_global};
+
+	struct tile** Tiles = (struct tile**) malloc(100*sizeof(struct tile*));
+    *(Tiles) = Dummy;
+    *(Tiles+1) = Player_global;
+    *(Tiles+2) = TestTile_global;
+    *(Tiles+3) = TestTile2_global;
+    *(Tiles+4) = Door_global;
 
 	struct tile* local_tiles;
 
-	local_tiles = (struct tile*)malloc(100 * sizeof(struct tile));
+	local_tiles = (struct tile*)malloc(150 * sizeof(struct tile));
 
 	for (int i = 0; i < 100; i++)
 	{
@@ -69,7 +74,7 @@ int main(void)
 		(local_tiles + i)->layout = (char**) malloc(3 * sizeof(char*));
 		for (int j = 0; j < 6; j++)
 			{
-				(local_tiles+i)->layout[j] =(char**) malloc(3 * sizeof(char*));
+				(local_tiles+i)->layout[j] =(char*) malloc(3 * sizeof(char*));
 			}
 
 		init_tile_pointer(local_tiles + i);
@@ -83,9 +88,9 @@ int main(void)
 	player.xpos = 0;
 	player.ypos = 0;
 	
-	struct asset TestZone;
-	TestZone.visual_asset = fopen("TileTestZone.txt", "r");
-	TestZone.functional_asset = fopen("TileTestZone.txt", "r");
+	//struct asset TestZone;
+	//TestZone.visual_asset = fopen("TileTestZone.txt", "r");
+	//TestZone.functional_asset = fopen("TileTestZone.txt", "r");
 	
 	char TestTileArr[6][3] = { '\0' };
 
@@ -1099,14 +1104,16 @@ int main(void)
 		Tile71, Tile72, Tile73, Tile74, Tile75, Tile76, Tile77, Tile78, Tile79, Tile80,
 		Tile81, Tile82, Tile83, Tile84, Tile85, Tile86, Tile87, Tile88, Tile89, Tile90,
 		Tile91, Tile92, Tile93, Tile94, Tile95, Tile96, Tile97, Tile98, Tile99};*/
-
 	init_local_tiles(local_tiles);
+
 	init_tiles(local_tiles);
 
 	int pos[2] = { player.xpos, player.ypos };
 
+
 	init_screen(screen);
-	load_scene(TestZone, screen, tile_ids, ref, local_tiles, tile_frequency);
+
+	//load_scene(TestZone, screen, tile_ids, ref, local_tiles, tile_frequency);
 	load_tiles(tile_frequency, local_tiles, Dummy, Tiles);
 	//system("PAUSE");
 	print_screen(screen, pos, local_tiles, tile_ids);
@@ -1116,17 +1123,17 @@ int main(void)
 	print_frequency(tile_frequency);
 
 
+    return 0;
 	while (exit != 1)
 	{
-		input = _getche();
+		//input = _getche();
+		scanf("%c%*c", &input);
 
-		update_location(tile_ids, ref, pos, input, local_tiles);
+		update_location(tile_ids, ref, pos, input, &local_tiles);
 		input = '\0';
 		system("cls");
-		print_screen(screen, pos, local_tiles, tile_ids);
+		print_screen(screen, pos, &local_tiles, tile_ids);
 		print_menu(TestText);
 		printf("Player position is %d %d.\n", pos[0], pos[1]);
 	}
-
-	return 0;
 }
