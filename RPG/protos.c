@@ -166,6 +166,7 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 		{
 			
 		pos[0] = pos[0] - col_check(array, ref, pos, input, local_tiles, loaded_tile_ids);
+		array[pos[1]][pos[0]] = 1;
 			
 		}
 	}
@@ -175,6 +176,7 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 		{
 			
 		pos[0] = pos[0] + col_check(array, ref, pos, input, local_tiles, loaded_tile_ids);
+		array[pos[1]][pos[0]] = 1;
 			
 		}
 	}
@@ -184,6 +186,7 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 		{
 			
 		pos[1] = pos[1] - col_check(array, ref, pos, input, local_tiles, loaded_tile_ids);
+		array[pos[1]][pos[0]] = 1;
 			
 		}
 	}
@@ -193,17 +196,16 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 		{
 			
 		pos[1] = pos[1] + col_check(array, ref, pos, input, local_tiles, loaded_tile_ids);
+		array[pos[1]][pos[0]] = 1;
 			
 		}
 	}
-	
-	
-	array[pos[1]][pos[0]] = 0;
+
 }
-void load_scene(struct asset scene, int tile_ids[width][height], int ref[width][height], int tile_frequency[100])
+void load_scene(struct asset* scene, int tile_ids[width][height], int ref[width][height], int tile_frequency[100], int pos[2])
 {
 
-    FILE *scene_file = fopen(scene.file, "r");
+    FILE *scene_file = fopen((scene+0)->file, "r");
     if (scene_file != NULL) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -213,6 +215,7 @@ void load_scene(struct asset scene, int tile_ids[width][height], int ref[width][
         }
     }
 	fclose(scene_file);
+    tile_ids[pos[1]][pos[0]] = 1;
 }
 void print_menu(char text[])
 {
@@ -360,7 +363,7 @@ void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded
     {
         for (int j = 0; j < width; j++)
         {
-            for( int l = 0; l <5; l++)
+            for( int l = 0; l < count; l++)
             {
                 if (loaded_tile_ids[l] == tile_ids[j][i])
                 {
@@ -374,10 +377,11 @@ void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded
             }
         }
     }
-
     for (int i = 0; i < count; i++)
     {
        FILE* current_tile_asset = fopen((Tiles + loaded_tile_ids[i])->file, "r");
+       (local_tiles + i)->flags[0] = (Tiles + loaded_tile_ids[i])->flags[0];
+       (local_tiles + i)->flags[1] = (Tiles + loaded_tile_ids[i])->flags[1];
 
         if(current_tile_asset != NULL)
         {
@@ -385,7 +389,6 @@ void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded
             {
                 for (int j = 0; j < 6; j++)
                 {
-
                     fscanf(current_tile_asset, "%c", &(local_tiles+i)->layout[j][k]);
                 }
                 fscanf(current_tile_asset, "%*c");
@@ -395,6 +398,7 @@ void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded
         {
             printf("NULL FILE.\n");
         }
+        fclose(current_tile_asset);
     }
 }
 void init_local_tiles(struct tile* local_tiles, int tile_frequency[100])
@@ -412,7 +416,10 @@ void init_local_tiles(struct tile* local_tiles, int tile_frequency[100])
         {
             (local_tiles+i)->layout[j] = (char*) malloc(3 * sizeof(char*));
         }
+        (local_tiles + i)->flags[0] = '\0';
+        (local_tiles + i)->flags[1] = '\0';
     }
+    printf("Made it out of init\n");
 }
 int unique_local_tile_count(int tile_frequency[100])
 {
