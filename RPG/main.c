@@ -97,8 +97,6 @@ int main(void)
     *(Tiles+7) = Floor;
 
 
-
-
     //Declare global scenes
     struct asset TestZone;
     TestZone.file = "C:\\Users\\Clark\\Desktop\\stream\\RPG\\TileTestZone.txt";
@@ -110,8 +108,11 @@ int main(void)
     *(scenes) = TestZone;
     *(scenes+1) = TestZone2;
 
-    printf("Made it here\n");
-    system("PAUSE");
+    if(debug == 't')
+    {
+        printf("Made it here\n");
+        system("PAUSE");
+    }
 
     //Load scene and get frequency
     load_scene(scenes, tile_ids, ref, tile_frequency, pos, warp_def);
@@ -127,15 +128,14 @@ int main(void)
 
 	//load tiles
     load_tiles(tile_frequency, tile_ids, loaded_tile_ids, local_tiles, Tiles);
-    //printf("Made it out of load tiles\n");
 
+    if(debug == 't')
+    {
+        printf("Made it out of load tiles\n");
+    }
 
 	print_screen(screen, pos, local_tiles, tile_ids, loaded_tile_ids);
     print_menu(TestText);
-
-	load_settings(settings);
-
-
 
 	while (exit != 1)
 	{
@@ -151,7 +151,10 @@ int main(void)
 		system("cls");
         print_screen(screen, pos, local_tiles, tile_ids, loaded_tile_ids);
         print_menu(TestText);
-		//printf("Player position is %d %d.\n", pos[0], pos[1]);
+        if(debug == 't')
+        {
+            printf("Player position is %d %d.\n", pos[0], pos[1]);
+        }
 	}
 
     free(local_tiles);

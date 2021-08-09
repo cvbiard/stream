@@ -2,7 +2,7 @@
 
 #define height 10
 #define width height
-#define debug debug_state
+#define debug 't'
 #define global_amount 8
 
 #include <stdio.h>
@@ -30,7 +30,6 @@ struct tile
 	int warp[3];
 };
 
-void load_settings(FILE* settings);
 void init_screen(char array[60][30]);
 void print_screen(char array[60][30], int pos[2], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8]);
 int col_check(int array[width][height], int ref[width][height], int pos[2], char input, struct tile* local_tiles, int loaded_tile_ids[8], struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct tile* Tiles, int warp_def[3]);

@@ -1,24 +1,5 @@
 #include "header.h"
 
-void load_settings(FILE* settings)
-{
-	char debug_state = '\0';
-	if (settings != NULL)
-	{
-		fscanf(settings, "%*c%*c%*c%*c%*c%*c%*c%c", &debug_state);
-		if (debug_state == 't' || debug_state == 'T')
-		{
-			printf("Debug set to true.\n");
-			debug_state = 't';
-		}
-		else if (debug_state == 'f' || debug_state == 'F')
-		{
-			printf("Debug set to false.\n");
-			debug_state = 'f';
-		}
-		printf("Debug macro is %c.\n", debug);
-	}
-}
 void init_screen(char array[60][30])
 {
 	for (int i = 0; i < height*3; i++)
@@ -480,7 +461,10 @@ void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded
 
         if(current_tile_asset != NULL)
         {
-            printf("in the if statement\n");
+            if(debug == 't')
+            {
+                printf("in the if statement\n");
+            }
             for (int k = 0; k < 3; k++)
             {
                 for (int j = 0; j < 6; j++)
@@ -507,7 +491,10 @@ void init_local_tiles(struct tile* local_tiles, int tile_frequency[100])
     for (int i = 0; i < count; i++)
     {
         (local_tiles + i)->id = i;
-        printf("ID %d.\n", (local_tiles + i)->id);
+        if(debug == 't')
+        {
+            printf("ID %d.\n", (local_tiles + i)->id);
+        }
         (local_tiles + i)->layout = (char**) malloc(3 * sizeof(char*));
         for (int j = 0; j < 6; j++)
         {
@@ -520,7 +507,10 @@ void init_local_tiles(struct tile* local_tiles, int tile_frequency[100])
         (local_tiles + i)->warp[2] = -1;
 
     }
-    //printf("Made it out of init\n");
+    if (debug == 't')
+    {
+        printf("Made it out of init\n");
+    }
 }
 int unique_local_tile_count(int tile_frequency[100])
 {
@@ -569,9 +559,18 @@ void change_scene(struct asset* scenes, int tile_ids[width][height], int ref[wid
 
     //init local_tiles
     init_local_tiles(local_tiles, tile_frequency);
-    //system("PAUSE");
+    if(debug == 't')
+    {
+        system("PAUSE");
+    }
+
 
     //load tiles
     load_tiles(tile_frequency, tile_ids, loaded_tile_ids, local_tiles, Tiles);
-    //system("PAUSE");
+    if(debug == 't')
+    {
+        system("PAUSE");
+    }
+
 }
+
