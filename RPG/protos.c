@@ -1,7 +1,191 @@
 #include "header.h"
 
-void init_screen(char array[60][30])
+/* I would like to load the background to a string. I would like the string to be able to be printed as is, instead of having to jump around during printing.
+ * Define the string location for each tile, then load tiles as needed into those locations
+ *
+*/
+
+void print_screen_map()
 {
+    int screen_map[1984] = {0};
+    int count = 0;
+    FILE* outfile = fopen("screen_map.txt", "w");
+    for (int i = 0; i < 62; i++)
+    {
+        //printf("#");
+        screen_map[count] = 102;
+        count = count + 1;
+    }
+    for(int l = 0; l <10; l++)
+    {
+        for (int k = 0; k < 3; k++) {
+            //printf("#");
+            screen_map[count] = 102;
+            count = count + 1;
+            for (int i = 0 + (l*10); i < 10+(l*10); i++) {
+
+                for (int j = 0; j < 6; j++) {
+                    //printf("%d", i);
+                    screen_map[count] = i;
+                    count = count+1;
+                }
+            }
+            screen_map[count] = 102;
+            count = count+1;
+            //printf("#");
+        }
+    }
+    for (int i = 1922; i < 1984; i++)
+    {
+        //printf("#");
+        screen_map[count] = 102;
+        count = count + 1;
+    }
+    for (int i = 0; i<1984; i++)
+    {
+        fprintf(outfile, "%d, ", screen_map[i]);
+    }
+    fclose(outfile);
+    print_screen(screen_map);
+}
+void tile_mapping(int tile_map[100][18], int screen_mapping[1984])
+{
+    for(int i = 0; i <100; i++)
+    {
+        for (int j = 0; j <18; j++)
+        {
+            tile_map[i][j] = 0;
+        }
+    }
+
+    for (int i = 0; i<1984; i++)
+    {
+        for(int j = 0; j<18; j++)
+        {
+            if (tile_map[screen_mapping[i]][j] == 0)
+            {
+                tile_map[screen_mapping[i]][j] = i;
+                break;
+            }
+        }
+
+    }
+
+    for(int j = 0; j <100; j++)
+    {
+        for (int i = 0; i <18; i++)
+        {
+            if (i == 17)
+            {
+                printf("%d}, ", tile_map[j][i]);
+            }
+            else if (i == 0)
+            {
+                printf("{%d, ", tile_map[j][i]);
+            }
+            else
+            {
+                printf("%d, ", tile_map[j][i]);
+            }
+
+        }
+        printf("\n");
+    }
+
+
+}
+void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int loaded_tile_ids[8], int tile_frequency[100])
+{
+    int unique_count = 0;
+    int used_tiles[100] = {0};
+    int linear_ids[100] = {0};
+    int tick = 0;
+
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            linear_ids[tick] = tile_ids[j][i];
+            tick = tick+1;
+        }
+    }
+
+    system("PAUSE");
+
+    for(int i = 0; i<1984; i++)
+    {
+        scrstr[i] = 35;
+    }
+
+    //Log the ID of each unique tile that will need to be loaded, as well as count how many
+    for(int i = 0; i<100; i++)
+    {
+        if(tile_frequency[i]>0)
+        {
+            for(int j = 0; j<100; j++)
+            {
+                if(used_tiles[j] == 0)
+                {
+                    unique_count = unique_count + 1;
+                    used_tiles[j] = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i<unique_count; i++)
+    {
+        FILE* loaded = fopen((Tiles+used_tiles[i])->file, "r");
+        char current[18];
+        for(int n = 0; n < 18; n++)
+        {
+
+            fscanf(loaded, "%c", &current[n]);
+            //printf("%c", current[n]);
+            if(n == 5 || n == 11 || n == 17)
+            {
+                fscanf(loaded, "%*c");
+                //printf("\n");
+            }
+        }
+        fclose(loaded);
+
+
+       for (int m = 0; m <100; m++)
+       {
+           if(linear_ids[m] == (Tiles+used_tiles[i])->id)
+           {
+               for(int p = 0; p<18; p++)
+               {
+                   scrstr[tile_map[m][p]] = (int)current[p];
+               }
+           }
+
+       }
+    }
+
+}
+
+void print_screen(int scrstr[1984])
+{
+
+    int line_pos = 0;
+    for(int i = 0; i<1984;i++)
+    {
+        printf("%c", (char)scrstr[i]);
+        if(line_pos == 61)
+        {
+            printf("\n");
+            line_pos = -1;
+
+        }
+        line_pos = line_pos+1;
+    }
+}
+/*void create_screen(char array[60][30])
+{
+    //Populates the screen character array so memory is allocated for the correct amount of characters
 	for (int i = 0; i < height*3; i++)
 	{
 		for (int j = 0; j < width*6; j++)
@@ -9,28 +193,32 @@ void init_screen(char array[60][30])
 			array[j][i] = '-';
 		}
 	}
-}
-void print_screen(char array[60][30], int pos[2], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8])
+}*/
+void init_screen(char array[60][30], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8])
 {
-	for (int i = 0; i < height * 3; i = i + 3)
-	{
-		for (int j = 0; j < width * 6; j = j + 6)
-		{
-			for (int k = 0; k < 6; k++)
-			{
-				for (int l = 0; l < 3; l++)
-				{
-				    for(int m = 0; m < 8; m++)
+    //Loads static background tiles so they don't need to be reloaded every screen print
+    for (int i = 0; i < height * 3; i = i + 3)
+    {
+        for (int j = 0; j < width * 6; j = j + 6)
+        {
+            for (int k = 0; k < 6; k++)
+            {
+                for (int l = 0; l < 3; l++)
+                {
+                    for(int m = 0; m < 8; m++)
                     {
-				        if(loaded_tile_ids[m] == tile_ids[j / 6][i / 3])
+                        if(loaded_tile_ids[m] == tile_ids[j / 6][i / 3])
                         {
                             array[k + j][i + l] = (local_tiles+m)->layout[k][l];
                         }
                     }
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
+}
+/*void print_screen(char array[60][30], int pos[2], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8])
+{
 	printf(" ");
 	for (int i = 0; i < width*6; i++)
 	{
@@ -61,7 +249,7 @@ void print_screen(char array[60][30], int pos[2], struct tile* local_tiles, int 
 		printf("#");
 	}
 	printf("\n");
-}
+}*/
 int col_check(int array[width][height], int ref[width][height], int pos[2], char input, struct tile* local_tiles, int loaded_tile_ids[8], struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct tile* Tiles, int warp_def[3])
 {
     int test[3] = {0, 0, 0};
@@ -275,11 +463,11 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width][height], int tile_frequency[100], int pos[2], int warppos[3])
 {
 
-    FILE *scene_file = fopen((scenes+warppos[0])->file, "r");
+    FILE *scene_file = fopen((scenes+0)->file, "r");
     if (scene_file != NULL) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                fscanf(scene_file, "%i", &tile_ids[j][i]);
+                fscanf(scene_file, "%d", &tile_ids[j][i]);
                 ref[j][i] = tile_ids[j][i];
             }
         }
@@ -287,7 +475,7 @@ void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width
 	fclose(scene_file);
     pos[0] = warppos[1];
     pos[1] = warppos[2];
-    tile_ids[pos[1]][pos[0]] = 1;
+    //tile_ids[pos[1]][pos[0]] = 1;
 }
 void print_menu(char text[])
 {
