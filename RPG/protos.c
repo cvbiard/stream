@@ -5,6 +5,20 @@
  *
 */
 
+void map_pos()
+{
+    FILE* linear_pos = fopen("linear_pos.txt", "w");
+    int tick = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            fprintf(linear_pos, "{%d, %d},", i, j);
+            tick = tick + 1;
+        }
+    }
+    fclose(linear_pos);
+}
 void print_screen_map()
 {
     int screen_map[1984] = {0};
@@ -94,13 +108,13 @@ void tile_mapping(int tile_map[100][18], int screen_mapping[1984])
 
 
 }
-void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int loaded_tile_ids[8], int tile_frequency[100])
+void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int loaded_tile_ids[8], int tile_frequency[100], int linear_ids[100])
 {
     int unique_count = 0;
     int used_tiles[100] = {0};
-    int linear_ids[100] = {0};
     int tick = 0;
 
+    //Transforms tile_ids from 10x10 grid to a linear 100
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 10; j++)
@@ -110,8 +124,9 @@ void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles,
         }
     }
 
-    system("PAUSE");
+    //system("PAUSE");
 
+    //Sets the whole screen to # (35). If overwriting works, this should just leave a border of #
     for(int i = 0; i<1984; i++)
     {
         scrstr[i] = 35;
@@ -134,6 +149,7 @@ void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles,
         }
     }
 
+    //Opens the file for the current tile being loaded, and loads it into a linear array while eating newlines
     for(int i = 0; i<unique_count; i++)
     {
         FILE* loaded = fopen((Tiles+used_tiles[i])->file, "r");
@@ -151,7 +167,7 @@ void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles,
         }
         fclose(loaded);
 
-
+        //Scrubs through tile ids in order, and if any of them match ids with the currently loaded tile, uses the tile_map to write each line of the tile to the right position in the screen string.
        for (int m = 0; m <100; m++)
        {
            if(linear_ids[m] == (Tiles+used_tiles[i])->id)
@@ -165,8 +181,13 @@ void screen_manager(int scrstr[1984], int tile_map[100][18], struct tile* Tiles,
        }
     }
 
-}
+    //Updates the background map for future use to restore a tile on the screen that gets changed from moving tiles
+    for (int i =0; i<1984; i++)
+    {
+        bgmap[i] = scrstr[i];
+    }
 
+}
 void print_screen(int scrstr[1984])
 {
 
@@ -460,7 +481,7 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 	}
 
 }
-void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width][height], int tile_frequency[100], int pos[2], int warppos[3])
+void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width][height], int tile_frequency[100])
 {
 
     FILE *scene_file = fopen((scenes+0)->file, "r");
@@ -473,9 +494,129 @@ void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width
         }
     }
 	fclose(scene_file);
-    pos[0] = warppos[1];
-    pos[1] = warppos[2];
     //tile_ids[pos[1]][pos[0]] = 1;
+}
+int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2])
+{
+    //Linear movement to a 2D space
+    //One space down is +10
+    //One space up is -10
+    //One space right is +1
+    //One left is -1
+
+    for(int i = 0; i < 18; i++)
+    {
+        if(player_tile[i] == trans_symbol)
+        {
+            scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+        }
+        else if (player_tile[i] == blank_symbol)
+        {
+            scrstr[tile_map[pos][i]] = 32;
+        }
+        else
+        {
+            scrstr[tile_map[pos][i]] = (int) player_tile[i];
+        }
+    }
+
+
+    if (input == 'w' || input == 'W')
+    {
+        if (pos - 10 >= 0)
+        {
+            for(int i = 0; i < 18; i++)
+            {
+                scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+                if(player_tile[i] == trans_symbol)
+                {
+                    scrstr[tile_map[pos - 10][i]] = bgmap[tile_map[pos -10][i]];
+                }
+                else if (player_tile[i] == blank_symbol)
+                {
+                    scrstr[tile_map[pos - 10][i]] = 32;
+                }
+                else
+                {
+                    scrstr[tile_map[pos -10][i]] = (int) player_tile[i];
+                }
+            }
+            return pos - 10;
+        }
+
+    }
+    if (input == 's' || input == 'S')
+    {
+        if (pos + 10 <= 99)
+        {
+            for(int i = 0; i < 18; i++)
+            {
+                scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+                if(player_tile[i] == trans_symbol)
+                {
+                    scrstr[tile_map[pos + 10][i]] = bgmap[tile_map[pos + 10][i]];
+                }
+                else if (player_tile[i] == blank_symbol)
+                {
+                    scrstr[tile_map[pos + 10][i]] = 32;
+                }
+                else
+                {
+                    scrstr[tile_map[pos + 10][i]] = (int) player_tile[i];
+                }
+            }
+            return pos + 10;
+        }
+    }
+    if (input == 'a' || input == 'A')
+    {
+        if (pos - 1 >= 0 && pos%10 != 0)
+        {
+            for(int i = 0; i < 18; i++)
+            {
+                scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+                if(player_tile[i] == trans_symbol)
+                {
+                    scrstr[tile_map[pos - 1][i]] = bgmap[tile_map[pos - 1][i]];
+                }
+                else if (player_tile[i] == blank_symbol)
+                {
+                    scrstr[tile_map[pos - 1][i]] = 32;
+                }
+                else
+                {
+                    scrstr[tile_map[pos -1][i]] = (int) player_tile[i];
+                }
+            }
+            return pos - 1;
+        }
+    }
+    if (input == 'd' || input == 'D')
+    {
+        if (pos + 1 >= 0 && pos%10 != 9)
+        {
+            for(int i = 0; i < 18; i++)
+            {
+                scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+                if(player_tile[i] == trans_symbol)
+                {
+                    scrstr[tile_map[pos + 1][i]] = bgmap[tile_map[pos + 1][i]];
+                }
+                else if (player_tile[i] == blank_symbol)
+                {
+                    scrstr[tile_map[pos + 1][i]] = 32;
+                }
+                else
+                {
+                    scrstr[tile_map[pos + 1][i]] = (int) player_tile[i];
+                }
+            }
+            return pos + 1;
+        }
+    }
+
+    return pos;
+
 }
 void print_menu(char text[])
 {
