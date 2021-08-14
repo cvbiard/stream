@@ -138,7 +138,6 @@ int main(void)
 	Dummy.flags[1] = '\0';
 	Dummy.warp[0] = -1;
 	Dummy.warp[1] = -1;
-	Dummy.warp[2] = -1;
 
 
 	struct tile Player_global;
@@ -180,8 +179,7 @@ int main(void)
 	Door1_global.flags[0] = '\0';
 	Door1_global.flags[1] = 'd';
 	Door1_global.warp[0] = 1;
-	Door1_global.warp[1] = 5;
-	Door1_global.warp[2] = 5;
+	Door1_global.warp[1] = 85;
 
     struct tile Door2_global;
     Door2_global.id = 5;
@@ -190,7 +188,6 @@ int main(void)
     Door2_global.flags[1] = 'd';
     Door2_global.warp[0] = 0;
     Door2_global.warp[1] = 5;
-    Door2_global.warp[2] = 5;
 
     struct tile Wall;
     Wall.id = 6;
@@ -236,7 +233,7 @@ int main(void)
     }
 
     //Load scene and get frequency
-    load_scene(scenes, tile_ids, ref, tile_frequency);
+    load_scene((scenes+0), tile_ids, tile_frequency);
     get_frequency(tile_ids, tile_frequency);
 
     if(debug == 't')
@@ -245,9 +242,7 @@ int main(void)
         system("PAUSE");
     }
     //init_screen(screen, local_tiles, tile_ids, loaded_tile_ids);
-    screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, loaded_tile_ids, tile_frequency, linear_ids);
-    move(scrstr, bgmap, tile_map, player.pos, 'f', player_tile, linear_ids, linear_pos);
-
+    screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile);
     //print_tile_ids(tile_ids);
 
     print_screen(scrstr);
@@ -265,7 +260,7 @@ int main(void)
 		    exit = 1;
         }
 
-        player.pos = move(scrstr, bgmap, tile_map, player.pos, input, player_tile, linear_ids, linear_pos);
+        player.pos = move(scrstr, bgmap, tile_map, player.pos, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, player);
 		//update_location(tile_ids, ref, pos, input, local_tiles, loaded_tile_ids, scenes, tile_ids, tile_frequency, Tiles, warp_def);
 		input = '\0';
 		system("cls");

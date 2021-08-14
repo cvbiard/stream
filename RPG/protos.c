@@ -108,7 +108,7 @@ void tile_mapping(int tile_map[100][18], int screen_mapping[1984])
 
 
 }
-void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int loaded_tile_ids[8], int tile_frequency[100], int linear_ids[100])
+void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int linear_ids[100], int pos, char player_tile[18])
 {
     int unique_count = 0;
     int used_tiles[100] = {0};
@@ -174,7 +174,14 @@ void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], st
            {
                for(int p = 0; p<18; p++)
                {
-                   scrstr[tile_map[m][p]] = (int)current[p];
+                   if((int)current[p] == (int)blank_symbol)
+                   {
+                       scrstr[tile_map[m][p]] = 32;
+                   }
+                   else
+                   {
+                       scrstr[tile_map[m][p]] = (int)current[p];
+                   }
                }
            }
 
@@ -185,6 +192,22 @@ void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], st
     for (int i =0; i<1984; i++)
     {
         bgmap[i] = scrstr[i];
+    }
+
+    for(int i = 0; i < 18; i++)
+    {
+        if(player_tile[i] == trans_symbol)
+        {
+            scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+        }
+        else if (player_tile[i] == blank_symbol)
+        {
+            scrstr[tile_map[pos][i]] = 32;
+        }
+        else
+        {
+            scrstr[tile_map[pos][i]] = (int) player_tile[i];
+        }
     }
 
 }
@@ -481,49 +504,42 @@ void update_location(int array[width][height], int ref[width][height], int pos[2
 	}
 
 }
-void load_scene(struct asset* scenes, int tile_ids[width][height], int ref[width][height], int tile_frequency[100])
+void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[100])
 {
 
-    FILE *scene_file = fopen((scenes+0)->file, "r");
+    FILE *scene_file = fopen(scenes->file, "r");
     if (scene_file != NULL) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 fscanf(scene_file, "%d", &tile_ids[j][i]);
-                ref[j][i] = tile_ids[j][i];
+                //ref[j][i] = tile_ids[j][i];
             }
         }
     }
 	fclose(scene_file);
     //tile_ids[pos[1]][pos[0]] = 1;
 }
-int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2])
+int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object player)
 {
     //Linear movement to a 2D space
     //One space down is +10
     //One space up is -10
     //One space right is +1
     //One left is -1
-
-    for(int i = 0; i < 18; i++)
-    {
-        if(player_tile[i] == trans_symbol)
-        {
-            scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
-        }
-        else if (player_tile[i] == blank_symbol)
-        {
-            scrstr[tile_map[pos][i]] = 32;
-        }
-        else
-        {
-            scrstr[tile_map[pos][i]] = (int) player_tile[i];
-        }
-    }
+    int warppos = 0;
 
 
     if (input == 'w' || input == 'W')
     {
-        if (pos - 10 >= 0)
+        if((Tiles + linear_ids[pos - 10])->flags[1] == 'd')
+        {
+            load_scene((scenes+(Tiles + linear_ids[pos - 10])->warp[0]), tile_ids, tile_frequency);
+            get_frequency(tile_ids, tile_frequency);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[pos - 10])->warp[1], player_tile);
+            player.pos = (Tiles + linear_ids[pos - 10])->warp[1];
+            return pos;
+        }
+        if (pos - 10 >= 0 && (Tiles + linear_ids[pos - 10])->flags[0]!= 'c')
         {
             for(int i = 0; i < 18; i++)
             {
@@ -547,7 +563,16 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char
     }
     if (input == 's' || input == 'S')
     {
-        if (pos + 10 <= 99)
+        if((Tiles + linear_ids[pos + 10])->flags[1] == 'd')
+        {
+            load_scene((scenes+(Tiles + linear_ids[pos + 10])->warp[0]), tile_ids, tile_frequency);
+            get_frequency(tile_ids, tile_frequency);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[pos + 10])->warp[1], player_tile);
+            system("cls");
+            print_screen(scrstr);
+            return (Tiles + linear_ids[pos + 10])->warp[1];
+        }
+        if (pos + 10 <= 99 && (Tiles + linear_ids[pos + 10])->flags[0]!= 'c')
         {
             for(int i = 0; i < 18; i++)
             {
@@ -568,9 +593,18 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char
             return pos + 10;
         }
     }
-    if (input == 'a' || input == 'A')
+    if (input == 'a' || input == 'A' )
     {
-        if (pos - 1 >= 0 && pos%10 != 0)
+        if((Tiles + linear_ids[pos - 1])->flags[1] == 'd')
+        {
+            load_scene((scenes+(Tiles + linear_ids[pos - 1])->warp[0]), tile_ids, tile_frequency);
+            get_frequency(tile_ids, tile_frequency);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[pos - 1])->warp[1], player_tile);
+            system("cls");
+            print_screen(scrstr);
+            return (Tiles + linear_ids[pos - 1])->warp[1];
+        }
+        if (pos - 1 >= 0 && pos%10 != 0 && (Tiles + linear_ids[pos - 1])->flags[0]!= 'c')
         {
             for(int i = 0; i < 18; i++)
             {
@@ -593,7 +627,16 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char
     }
     if (input == 'd' || input == 'D')
     {
-        if (pos + 1 >= 0 && pos%10 != 9)
+        if((Tiles + linear_ids[pos + 1])->flags[1] == 'd')
+        {
+            load_scene((scenes+(Tiles + linear_ids[pos + 1])->warp[0]), tile_ids, tile_frequency);
+            get_frequency(tile_ids, tile_frequency);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[pos + 1])->warp[1], player_tile);
+            system("cls");
+            print_screen(scrstr);
+            return (Tiles + linear_ids[pos + 1])->warp[1];
+        }
+        if (pos + 1 >= 0 && pos%10 != 9  && (Tiles + linear_ids[pos + 1])->flags[0]!= 'c')
         {
             for(int i = 0; i < 18; i++)
             {
@@ -879,7 +922,7 @@ void change_scene(struct asset* scenes, int tile_ids[width][height], int ref[wid
     }
 
     //Load scene and get frequency
-    load_scene(scenes, tile_ids, ref, tile_frequency, pos, warppos);
+    load_scene(scenes, tile_ids, tile_frequency);
     get_frequency(tile_ids, tile_frequency);
 
     //Create and initialize local_tiles
