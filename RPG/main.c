@@ -251,9 +251,12 @@ int main(void)
 	//print_screen(screen, pos, local_tiles, tile_ids, loaded_tile_ids);
     //print_menu(TestText);
 
+     //system("DISABLE_LINE_INPUT");
+
 	while (exit != 1)
 	{
-		input = _getche();
+
+		scanf("%c", &input);
 
 		if (input == 'p')
         {
