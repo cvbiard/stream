@@ -3,7 +3,8 @@
 #define height 10
 #define width height
 #define debug 't'
-#define global_amount 8
+#define global_amount_tiles 11
+#define global_amount_scenes 2
 #define trans_symbol 'X'
 #define blank_symbol 'x'
 
@@ -31,27 +32,16 @@ struct tile
 	int warp[2];
 };
 
-//void create_screen(char array[60][30]);
+/*NOTES
+ * As a next step I want to rework the tile system to be scalable with a resolution. Right now all tiles are 6x3 and the screen is 10x10. I want to make both customizable, with the purpose of making the engine usable beyond
+ * just this project.
+ */
 void map_pos();
 void print_screen_map();
 void tile_mapping(int tile_map[100][18], int screen_mapping[1984]);
 void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int linear_ids[100], int pos, char player_tile[18]);
-void init_screen(char array[60][30], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8]);
-//void print_screen(char array[60][30], int pos[2], struct tile* local_tiles, int tile_ids[width][height], int loaded_tile_ids[8]);
 void print_screen(int scrstr[1984]);
-int col_check(int array[width][height], int ref[width][height], int pos[2], char input, struct tile* local_tiles, int loaded_tile_ids[8], struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct tile* Tiles, int warp_def[3]);
-void update_location(int array[width][height], int ref[width][height], int pos[2], char input, struct tile* local_tiles, int loaded_tile_ids[8], struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct tile* Tiles, int warp_def[3]);
 void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[100]);
-int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], int pos, char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object player);
+int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object *player);
 void print_menu(char text[]);
-void init_tile_pointer(struct tile* tile);
-void init_tile(struct tile* tile);
-void init_tiles(struct tile* local_tiles);
-void print_tile(struct tile* tile);
-void print_tile_ids(int tile_ids[width][height]);
 void get_frequency(int tile_ids[width][height], int tile_frequency[100]);
-void print_frequency(int tile_frequency[100]);
-void load_tiles(int tile_frequency[100], int tile_ids[width][height], int loaded_tile_ids[8], struct tile* local_tiles, struct tile* Tiles);
-void init_local_tiles(struct tile* local_tiles, int tile_frequency[100]);
-int unique_local_tile_count(int tile_frequency[100]);
-void change_scene(struct asset* scenes, int tile_ids[width][height], int ref[width][height], int tile_frequency[100], int pos[2], int warppos[3], int loaded_tile_ids[8], int warp_def[3], struct tile* Tiles, struct tile* local_tiles);
