@@ -1,23 +1,30 @@
 #include "header.h"
 
-/* I would like to load the background to a string. I would like the string to be able to be printed as is, instead of having to jump around during printing.
- * Define the string location for each tile, then load tiles as needed into those locations
- *
-*/
-
-void map_pos()
+int calc_screen_size(int border)
 {
-    FILE* linear_pos = fopen("linear_pos.txt", "w");
-    int tick = 0;
-    for (int i = 0; i < 10; i++)
+    int size = 0;
+    size = ((width * height)*(tile_height*tile_width));
+    printf("Size pre border: %d\n", size);
+    if (border == 1)
     {
-        for (int j = 0; j < 10; j++)
+        printf("Border size %d\n", ((((width + tile_width) + 2) * 2)+((height * tile_height)*2)));
+        size = size + (((width*tile_width)+2)*2) + ((height*tile_height)*2);
+        printf("Total size %d\n", size);
+    }
+    system("PAUSE");
+
+    debug_printer(3);
+    return size;
+}
+void map_pos(int linear_pos[(height*width)][2])
+{
+    for (int i = 0; i < height*width; i++)
+    {
+        for (int j = 0; j < 2; j++)
         {
-            fprintf(linear_pos, "{%d, %d},", i, j);
-            tick = tick + 1;
+            linear_pos[i][j] = j;
         }
     }
-    fclose(linear_pos);
 }
 void print_screen_map()
 {
@@ -60,84 +67,102 @@ void print_screen_map()
         fprintf(outfile, "%d, ", screen_map[i]);
     }
     fclose(outfile);
-    print_screen(screen_map);
 }
-void tile_mapping(int tile_map[100][18], int screen_mapping[1984])
+void mapping(int tile_map[(height*width)][(tile_height*tile_width)], int screen_size)
 {
-    for(int i = 0; i <100; i++)
+    int *screen_mapping = (int)malloc(screen_size * sizeof(int));
+    int count = 0;
+
+    for (int i = 0; i < ((width*tile_width)+2); i++)
     {
-        for (int j = 0; j <18; j++)
+        //printf("#");
+        *(screen_mapping + count) = ((width*height)+2); //was 102
+        count = count + 1;
+    }
+    for(int l = 0; l <height; l++)
+    {
+        for (int k = 0; k < tile_height; k++) {
+            //printf("#");
+            *(screen_mapping + count) = ((width*height)+2); //was 102
+            count = count + 1;
+            for (int i = 0 + (l*width); i < width+(l*width); i++) {
+
+                for (int j = 0; j < tile_width; j++) {
+                    //printf("%d", i);
+                    *(screen_mapping + count) = i;
+                    count = count+1;
+                }
+            }
+            *(screen_mapping + count) = ((width*height)+2); //was 102 idk why
+            count = count+1;
+            //printf("#");
+        }
+    }
+    for (int i = (screen_size - ((width*tile_width)+2)); i < screen_size; i++)
+    {
+        //printf("#");
+        *(screen_mapping + count) = ((width*height)+2); //was 102, not sure why
+        count = count + 1;
+    }
+
+
+    for(int i = 0; i <(height*width); i++)
+    {
+        for (int j = 0; j <(tile_height*tile_width); j++)
         {
             tile_map[i][j] = 0;
         }
     }
 
-    for (int i = 0; i<1984; i++)
+    for (int i = 0; i<screen_size; i++)
     {
-        for(int j = 0; j<18; j++)
+        for(int j = 0; j<(tile_height*tile_width); j++)
         {
-            if (tile_map[screen_mapping[i]][j] == 0)
+            if (tile_map[*(screen_mapping+i)][j] == 0)
             {
-                tile_map[screen_mapping[i]][j] = i;
+                tile_map[*(screen_mapping+i)][j] = i;
                 break;
             }
         }
 
     }
 
-    for(int j = 0; j <100; j++)
-    {
-        for (int i = 0; i <18; i++)
-        {
-            if (i == 17)
-            {
-                printf("%d}, ", tile_map[j][i]);
-            }
-            else if (i == 0)
-            {
-                printf("{%d, ", tile_map[j][i]);
-            }
-            else
-            {
-                printf("%d, ", tile_map[j][i]);
-            }
-
-        }
-        printf("\n");
-    }
-
+    free(screen_mapping);
 
 }
-void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int linear_ids[100], int pos, char player_tile[18])
+void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int *linear_ids, int pos, char player_tile[18], int screen_size)
 {
     int unique_count = 0;
-    int used_tiles[100] = {0};
+    int used_tiles[(width*height)] = {0};
     int tick = 0;
 
     //Transforms tile_ids from 10x10 grid to a linear 100
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < height; i++)
     {
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < width; j++)
         {
             linear_ids[tick] = tile_ids[j][i];
             tick = tick+1;
         }
     }
 
+    //debug_printer(2);
     //system("PAUSE");
 
     //Sets the whole screen to # (35). If overwriting works, this should just leave a border of #
-    for(int i = 0; i<1984; i++)
+    for(int i = 0; i<screen_size; i++)
     {
         scrstr[i] = 35;
     }
 
+   // debug_printer(3);
+
     //Log the ID of each unique tile that will need to be loaded, as well as count how many
-    for(int i = 0; i<100; i++)
+    for(int i = 0; i<(width*height); i++)
     {
         if(tile_frequency[i]>0)
         {
-            for(int j = 0; j<100; j++)
+            for(int j = 0; j<(width*height); j++)
             {
                 if(used_tiles[j] == 0)
                 {
@@ -153,25 +178,34 @@ void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], st
     for(int i = 0; i<unique_count; i++)
     {
         FILE* loaded = fopen((Tiles+(used_tiles[i]))->file, "r");
-        char current[18];
-        for(int n = 0; n < 18; n++)
+        char prenewline[(tile_width*tile_height)+tile_height];
+        char current[(tile_width*tile_height)];
+        for(int n = 0; n < ((tile_width*tile_height)+tile_height); n++)
         {
 
-            fscanf(loaded, "%c", &current[n]);
+            fscanf(loaded, "%c", &prenewline[n]);
             //printf("%c", current[n]);
-            if(n == 5 || n == 11 || n == 17)
-            {
-                fscanf(loaded, "%*c");
-                //printf("\n");
-            }
         }
         fclose(loaded);
+
+        int tick = 0;
+        for(int n = 0; n < ((tile_width*tile_height)+tile_height); n++)
+        {
+
+            if(prenewline[n] != 10)
+            {
+                current[tick] = prenewline[n];
+                tick = tick+1;
+            }
+        }
+
+
         //Scrubs through tile ids in order, and if any of them match ids with the currently loaded tile, uses the tile_map to write each line of the tile to the right position in the screen string.
-       for (int m = 0; m <100; m++)
+       for (int m = 0; m <(width*height); m++)
        {
            if(linear_ids[m] == (Tiles+used_tiles[i])->id)
            {
-               for(int p = 0; p<18; p++)
+               for(int p = 0; p<(tile_width*tile_height); p++)
                {
                    if((int)current[p] == (int)blank_symbol)
                    {
@@ -188,12 +222,12 @@ void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], st
     }
 
     //Updates the background map for future use to restore a tile on the screen that gets changed from moving tiles
-    for (int i =0; i<1984; i++)
+    for (int i =0; i<screen_size; i++)
     {
         bgmap[i] = scrstr[i];
     }
 
-    for(int i = 0; i < 18; i++)
+    for(int i = 0; i < (tile_width*tile_height); i++)
     {
         if(player_tile[i] == trans_symbol)
         {
@@ -210,14 +244,14 @@ void screen_manager(int scrstr[1984], int bgmap[1984], int tile_map[100][18], st
     }
 
 }
-void print_screen(int scrstr[1984])
+void print_screen(int *scrstr, int screen_size)
 {
 
     int line_pos = 0;
-    for(int i = 0; i<1984;i++)
+    for(int i = 0; i<screen_size;i++)
     {
         printf("%c", (char)scrstr[i]);
-        if(line_pos == 61)
+        if(line_pos == (tile_width*width)+1)
         {
             printf("\n");
             line_pos = -1;
@@ -241,7 +275,7 @@ void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_freq
 	fclose(scene_file);
     //tile_ids[pos[1]][pos[0]] = 1;
 }
-int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, char player_tile[18], int linear_ids[100], int linear_pos[100][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object *player)
+int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[18], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object *player, int screen_size)
 {
     //Linear movement to a 2D space
     //One space down is +10
@@ -259,12 +293,12 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, c
             player->pos = (Tiles + linear_ids[(player->pos) - 10])->warp[1];
             load_scene((scenes+(Tiles + linear_ids[prewarppos - 10])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 10])->warp[1], player_tile);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 10])->warp[1], player_tile, screen_size);
             return player->pos;
         }
         if ((player->pos) - 10 >= 0 && (Tiles + linear_ids[(player->pos) - 10])->flags[0]!= 'c')
         {
-            for(int i = 0; i < 18; i++)
+            for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
@@ -292,12 +326,12 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, c
             player->pos = (Tiles + linear_ids[(player->pos) + 10])->warp[1];
             load_scene((scenes+(Tiles + linear_ids[prewarppos + 10])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 10])->warp[1], player_tile);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 10])->warp[1], player_tile, screen_size);
             return player->pos;
         }
         if ((player->pos) + 10 <= 99 && (Tiles + linear_ids[(player->pos) + 10])->flags[0]!= 'c')
         {
-            for(int i = 0; i < 18; i++)
+            for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
@@ -324,12 +358,12 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, c
             player->pos = (Tiles + linear_ids[(player->pos) - 1])->warp[1];
             load_scene((scenes+(Tiles + linear_ids[prewarppos - 1])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 1])->warp[1], player_tile);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 1])->warp[1], player_tile, screen_size);
             return player->pos;
         }
         if ((player->pos) - 1 >= 0 && (player->pos)%10 != 0 && (Tiles + linear_ids[(player->pos) - 1])->flags[0]!= 'c')
         {
-            for(int i = 0; i < 18; i++)
+            for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
@@ -356,12 +390,12 @@ int move(int scrstr[1984], int bgmap[1984], int tile_map[100][18], char input, c
             player->pos = (Tiles + linear_ids[(player->pos) + 1])->warp[1];
             load_scene((scenes+(Tiles + linear_ids[prewarppos + 1])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 1])->warp[1], player_tile);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 1])->warp[1], player_tile, screen_size);
             return player->pos;
         }
         if ((player->pos) + 1 >= 0 && (player->pos)%10 != 9  && (Tiles + linear_ids[(player->pos) + 1])->flags[0]!= 'c')
         {
-            for(int i = 0; i < 18; i++)
+            for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
@@ -437,4 +471,8 @@ void get_frequency(int tile_ids[width][height], int tile_frequency[100])
 			tile_frequency[tile_ids[j][i]] = tile_frequency[tile_ids[j][i]] + 1;
 		}
 	}
+}
+void debug_printer(int number)
+{
+    printf("You've hit debug print number %d.\n", number);
 }

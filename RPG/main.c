@@ -5,12 +5,18 @@ int main(void)
 {
 
     //Declare stack variables
-	//FILE* settings = fopen("settings.txt", "r");
+    int scr_size = calc_screen_size(1);
+    debug_printer(1);
 	char input = '\0';
-	int scrstr[1984] ={0};
-	int bgmap[1984] = {0};
-	int linear_ids[100] = {0};
-	int tile_map[100][18] = {{63, 64, 65, 66, 67, 68, 125, 126, 127, 128, 129, 130, 187, 188, 189, 190, 191, 192},
+	int scrstr = (int) malloc(scr_size * sizeof(int));
+	int bgmap = (int) malloc(scr_size * sizeof(int));
+	debug_printer(2);
+	int linear_ids = (int) malloc((height*width) * sizeof(int));
+    int tile_map[(height*width)][(tile_height*tile_width)] = {0};
+    debug_printer(3);
+    mapping(tile_map, scr_size);
+	/*
+	int tile_map[(height*width)][(tile_height*tile_width)] = {{63, 64, 65, 66, 67, 68, 125, 126, 127, 128, 129, 130, 187, 188, 189, 190, 191, 192},
     {69, 70, 71, 72, 73, 74, 131, 132, 133, 134, 135, 136, 193, 194, 195, 196, 197, 198},
     {75, 76, 77, 78, 79, 80, 137, 138, 139, 140, 141, 142, 199, 200, 201, 202, 203, 204},
     {81, 82, 83, 84, 85, 86, 143, 144, 145, 146, 147, 148, 205, 206, 207, 208, 209, 210},
@@ -110,15 +116,22 @@ int main(void)
     {1779, 1780, 1781, 1782, 1783, 1784, 1841, 1842, 1843, 1844, 1845, 1846, 1903, 1904, 1905, 1906, 1907, 1908},
     {1785, 1786, 1787, 1788, 1789, 1790, 1847, 1848, 1849, 1850, 1851, 1852, 1909, 1910, 1911, 1912, 1913, 1914},
     {1791, 1792, 1793, 1794, 1795, 1796, 1853, 1854, 1855, 1856, 1857, 1858, 1915, 1916, 1917, 1918, 1919, 1920}};
+	*/
+    debug_printer(4);
+
 
 	char TestText[] = "This is test text, and I'm making it long to see what happens :)";
-	int linear_pos[100][2] = {{0, 0},{0, 1},{0, 2},{0, 3},{0, 4},{0, 5},{0, 6},{0, 7},{0, 8},{0, 9},{1, 0},{1, 1},{1, 2},{1, 3},{1, 4},{1, 5},{1, 6},{1, 7},{1, 8},{1, 9},{2, 0},{2, 1},{2, 2},{2, 3},{2, 4},{2, 5},{2, 6},{2, 7},{2, 8},{2, 9},{3, 0},{3, 1},{3, 2},{3, 3},{3, 4},{3, 5},{3, 6},{3, 7},{3, 8},{3, 9},{4, 0},{4, 1},{4, 2},{4, 3},{4, 4},{4, 5},{4, 6},{4, 7},{4, 8},{4, 9},{5, 0},{5, 1},{5, 2},{5, 3},{5, 4},{5, 5},{5, 6},{5, 7},{5, 8},{5, 9},{6, 0},{6, 1},{6, 2},{6, 3},{6, 4},{6, 5},{6, 6},{6, 7},{6, 8},{6, 9},{7, 0},{7, 1},{7, 2},{7, 3},{7, 4},{7, 5},{7, 6},{7, 7},{7, 8},{7, 9},{8, 0},{8, 1},{8, 2},{8, 3},{8, 4},{8, 5},{8, 6},{8, 7},{8, 8},{8, 9},{9, 0},{9, 1},{9, 2},{9, 3},{9, 4},{9, 5},{9, 6},{9, 7},{9, 8},{9, 9}};
-	int tile_ids[width][height], tile_frequency[100] = { 0 };
+	//int linear_pos[(width*height)][2] = {{0, 0},{0, 1},{0, 2},{0, 3},{0, 4},{0, 5},{0, 6},{0, 7},{0, 8},{0, 9},{1, 0},{1, 1},{1, 2},{1, 3},{1, 4},{1, 5},{1, 6},{1, 7},{1, 8},{1, 9},{2, 0},{2, 1},{2, 2},{2, 3},{2, 4},{2, 5},{2, 6},{2, 7},{2, 8},{2, 9},{3, 0},{3, 1},{3, 2},{3, 3},{3, 4},{3, 5},{3, 6},{3, 7},{3, 8},{3, 9},{4, 0},{4, 1},{4, 2},{4, 3},{4, 4},{4, 5},{4, 6},{4, 7},{4, 8},{4, 9},{5, 0},{5, 1},{5, 2},{5, 3},{5, 4},{5, 5},{5, 6},{5, 7},{5, 8},{5, 9},{6, 0},{6, 1},{6, 2},{6, 3},{6, 4},{6, 5},{6, 6},{6, 7},{6, 8},{6, 9},{7, 0},{7, 1},{7, 2},{7, 3},{7, 4},{7, 5},{7, 6},{7, 7},{7, 8},{7, 9},{8, 0},{8, 1},{8, 2},{8, 3},{8, 4},{8, 5},{8, 6},{8, 7},{8, 8},{8, 9},{9, 0},{9, 1},{9, 2},{9, 3},{9, 4},{9, 5},{9, 6},{9, 7},{9, 8},{9, 9}};
+	int linear_pos[(width*height)][2] = {0};
+	map_pos(linear_pos);
+	int tile_ids[width][height], tile_frequency[(width*height)] = { 0 };
     int exit = 0;
     struct object player;
     player.pos = 50;
 
-    char player_tile[18];
+    char player_tile[(tile_width*tile_height)];
+
+    debug_printer(2);
 
     //Declare global tiles
 	struct tile Dummy;
@@ -138,9 +151,9 @@ int main(void)
 
     FILE* pt = fopen(Player_global.file, "r");
     int tick = 0;
-    for(int i = 0; i<3; i++)
+    for(int i = 0; i<tile_height; i++)
     {
-        for(int j = 0; j <6 ;j++)
+        for(int j = 0; j <tile_width;j++)
         {
             fscanf(pt, "%c", &player_tile[tick]);
             tick = tick + 1;
@@ -251,12 +264,14 @@ int main(void)
         system("PAUSE");
     }
 
-    screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile);
+    screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile, scr_size);
+
+    debug_printer(5);
 
 
-    print_screen(scrstr);
+    print_screen(scrstr, scr_size);
 
-
+    //system("PAUSE");
 
 
 	while (exit != 1)
@@ -269,11 +284,11 @@ int main(void)
 		    exit = 1;
         }
 
-        player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player);
+        player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player, scr_size);
 		input = '\0';
 		system("cls");
 
-        print_screen(scrstr);
+        print_screen(scrstr, scr_size);
         print_menu(TestText);
         if(debug == 't')
         {
@@ -281,6 +296,8 @@ int main(void)
         }
 	}
 
+	free(scrstr);
+	free(bgmap);
     free(Tiles);
     free(scenes);
     return 0;
