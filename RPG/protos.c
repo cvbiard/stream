@@ -13,7 +13,7 @@ int calc_screen_size(int border)
     }
     system("PAUSE");
 
-    debug_printer(3);
+    //debug_printer(3);
     return size;
 }
 void map_pos(int linear_pos[(height*width)][2])
@@ -288,7 +288,7 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
     {
         if(((player->pos) - width) >= 0 && (Tiles + linear_ids[(player->pos) - width])->flags[1] == 'd')
         {
-            debug_printer(9);
+            //debug_printer(9);
             prewarppos = player->pos;
             player->pos = (Tiles + linear_ids[(player->pos) - width])->warp[1];
             load_scene((scenes+(Tiles + linear_ids[prewarppos - width])->warp[0]), tile_ids, tile_frequency);
@@ -420,19 +420,21 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
 void print_menu(char text[]) {
     int textdone = 0, textcounter = 0;
     printf(" ");
-    for (int i = 0; i < width * 6; i++) {
-        if (i == 0 || i == width * 6 - 1) {
+    for (int i = 0; i < width * tile_width; i++) {
+        if (i == 0 || i == ((width * tile_width) - 1))
+        {
             printf(" ");
-        } else {
+        }
+        else {
             printf("_");
         }
     }
     printf("\n");
 
-    for (int l = 0; l < height * 3 / 3; l++) {
+    for (int l = 0; l < (height * tile_height) / 3; l++) {
         printf(" ");
-        for (int j = 0; j <= width * 6 - 1; j++) {
-            if (j == 0 || j == width * 6 - 1) {
+        for (int j = 0; j <= (width * tile_width) - 1; j++) {
+            if (j == 0 || j == (width * tile_width) - 1) {
                 printf("|");
             } else {
                 if (text[textcounter] > 0 && text[textcounter] <= 127) {
@@ -452,8 +454,8 @@ void print_menu(char text[]) {
     }
 
     printf(" ");
-    for (int i = 0; i < width * 6; i++) {
-        if (i == 0 || i == width * 6 - 1) {
+    for (int i = 0; i < (width * tile_width); i++) {
+        if (i == 0 || i == (width * tile_width) - 1) {
             printf("|");
         } else {
             printf("_");

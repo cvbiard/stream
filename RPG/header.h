@@ -1,11 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#define height 11
-#define width 10
-#define tile_width 2
+#define height 20
+#define width 20
+#define tile_width 4
 #define tile_height 2
 #define debug 't'
-#define global_amount_tiles 11
+#define global_amount_tiles 15
 #define global_amount_scenes 2
 #define trans_symbol 'X'
 #define blank_symbol 'x'
