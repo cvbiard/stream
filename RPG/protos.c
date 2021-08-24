@@ -130,7 +130,7 @@ void mapping(int tile_map[(height*width)][(tile_height*tile_width)], int screen_
     free(screen_mapping);
 
 }
-void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int *linear_ids, int pos, char player_tile[18], int screen_size)
+void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[(width*height)], int *linear_ids, int pos, char player_tile[(tile_width*tile_height)], int screen_size)
 {
     int unique_count = 0;
     int used_tiles[(width*height)] = {0};
@@ -260,7 +260,7 @@ void print_screen(int *scrstr, int screen_size)
         line_pos = line_pos+1;
     }
 }
-void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[100])
+void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)])
 {
 
     FILE *scene_file = fopen(scenes->file, "r");
@@ -275,7 +275,7 @@ void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_freq
 	fclose(scene_file);
     //tile_ids[pos[1]][pos[0]] = 1;
 }
-int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[18], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object *player, int screen_size)
+int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[(tile_width*tile_height)], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)], struct object *player, int screen_size)
 {
     //Linear movement to a 2D space
     //One space down is +10
@@ -284,75 +284,74 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
     //One left is -1
     int prewarppos = 0;
 
-
     if (input == 'w' || input == 'W')
     {
-        if((Tiles + linear_ids[(player->pos) - 10])->flags[1] == 'd')
+        if(((player->pos) - width) >= 0 && (Tiles + linear_ids[(player->pos) - width])->flags[1] == 'd')
         {
+            debug_printer(9);
             prewarppos = player->pos;
-            player->pos = (Tiles + linear_ids[(player->pos) - 10])->warp[1];
-            load_scene((scenes+(Tiles + linear_ids[prewarppos - 10])->warp[0]), tile_ids, tile_frequency);
+            player->pos = (Tiles + linear_ids[(player->pos) - width])->warp[1];
+            load_scene((scenes+(Tiles + linear_ids[prewarppos - width])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 10])->warp[1], player_tile, screen_size);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - width])->warp[1], player_tile, screen_size);
             return player->pos;
         }
-        if ((player->pos) - 10 >= 0 && (Tiles + linear_ids[(player->pos) - 10])->flags[0]!= 'c')
+        if (((player->pos) - width) >= 0 && (Tiles + linear_ids[((player->pos) - width)])->flags[0] != 'c')
         {
             for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
                 {
-                    scrstr[tile_map[(player->pos) - 10][i]] = bgmap[tile_map[(player->pos) -10][i]];
+                    scrstr[tile_map[(player->pos) - width][i]] = bgmap[tile_map[(player->pos) - width][i]];
                 }
                 else if (player_tile[i] == blank_symbol)
                 {
-                    scrstr[tile_map[(player->pos) - 10][i]] = 32;
+                    scrstr[tile_map[(player->pos) - width][i]] = 32;
                 }
                 else
                 {
-                    scrstr[tile_map[(player->pos) -10][i]] = (int) player_tile[i];
+                    scrstr[tile_map[(player->pos) -width][i]] = (int) player_tile[i];
                 }
             }
-            return (player->pos) - 10;
+            return (player->pos) - width;
         }
-
     }
     if (input == 's' || input == 'S')
     {
-        if((Tiles + linear_ids[(player->pos) + 10])->flags[1] == 'd')
+        if((player->pos) + width <= ((width*height)-1) && (Tiles + linear_ids[(player->pos) + width])->flags[1] == 'd')
         {
             prewarppos = player->pos;
-            player->pos = (Tiles + linear_ids[(player->pos) + 10])->warp[1];
-            load_scene((scenes+(Tiles + linear_ids[prewarppos + 10])->warp[0]), tile_ids, tile_frequency);
+            player->pos = (Tiles + linear_ids[(player->pos) + width])->warp[1];
+            load_scene((scenes+(Tiles + linear_ids[prewarppos + width])->warp[0]), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 10])->warp[1], player_tile, screen_size);
+            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + width])->warp[1], player_tile, screen_size);
             return player->pos;
         }
-        if ((player->pos) + 10 <= 99 && (Tiles + linear_ids[(player->pos) + 10])->flags[0]!= 'c')
+        if ((player->pos) + width <= ((width*height)-1) && (Tiles + linear_ids[(player->pos) + width])->flags[0]!= 'c')
         {
             for(int i = 0; i < (tile_width*tile_height); i++)
             {
                 scrstr[tile_map[(player->pos)][i]] = bgmap[tile_map[(player->pos)][i]];
                 if(player_tile[i] == trans_symbol)
                 {
-                    scrstr[tile_map[(player->pos) + 10][i]] = bgmap[tile_map[(player->pos) + 10][i]];
+                    scrstr[tile_map[(player->pos) + width][i]] = bgmap[tile_map[(player->pos) + width][i]];
                 }
                 else if (player_tile[i] == blank_symbol)
                 {
-                    scrstr[tile_map[(player->pos) + 10][i]] = 32;
+                    scrstr[tile_map[(player->pos) + width][i]] = 32;
                 }
                 else
                 {
-                    scrstr[tile_map[(player->pos) + 10][i]] = (int) player_tile[i];
+                    scrstr[tile_map[(player->pos) + width][i]] = (int) player_tile[i];
                 }
             }
-            return (player->pos) + 10;
+            return (player->pos) + width;
         }
     }
     if (input == 'a' || input == 'A' )
     {
-        if((Tiles + linear_ids[(player->pos) - 1])->flags[1] == 'd')
+        if((player->pos) - 1 >= 0 && (Tiles + linear_ids[(player->pos) - 1])->flags[1] == 'd')
         {
             prewarppos = player->pos;
             player->pos = (Tiles + linear_ids[(player->pos) - 1])->warp[1];
@@ -361,7 +360,7 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
             screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos - 1])->warp[1], player_tile, screen_size);
             return player->pos;
         }
-        if ((player->pos) - 1 >= 0 && (player->pos)%10 != 0 && (Tiles + linear_ids[(player->pos) - 1])->flags[0]!= 'c')
+        if ((player->pos) - 1 >= 0 && (player->pos)%width != 0 && (Tiles + linear_ids[(player->pos) - 1])->flags[0]!= 'c')
         {
             for(int i = 0; i < (tile_width*tile_height); i++)
             {
@@ -384,7 +383,7 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
     }
     if (input == 'd' || input == 'D')
     {
-        if((Tiles + linear_ids[(player->pos) + 1])->flags[1] == 'd')
+        if((player->pos)%width != (width-1)  && (Tiles + linear_ids[(player->pos) + 1])->flags[1] == 'd')
         {
             prewarppos = player->pos;
             player->pos = (Tiles + linear_ids[(player->pos) + 1])->warp[1];
@@ -393,7 +392,7 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
             screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, (Tiles + linear_ids[prewarppos + 1])->warp[1], player_tile, screen_size);
             return player->pos;
         }
-        if ((player->pos) + 1 >= 0 && (player->pos)%10 != 9  && (Tiles + linear_ids[(player->pos) + 1])->flags[0]!= 'c')
+        if ((player->pos) + 1 >= 0 && (player->pos)%width != (width-1)  && (Tiles + linear_ids[(player->pos) + 1])->flags[0]!= 'c')
         {
             for(int i = 0; i < (tile_width*tile_height); i++)
             {
@@ -462,7 +461,7 @@ void print_menu(char text[]) {
     }
     printf("\n");
 }
-void get_frequency(int tile_ids[width][height], int tile_frequency[100])
+void get_frequency(int tile_ids[width][height], int tile_frequency[(width*height)])
 {
 	for (int i = 0; i < height; i++)
 	{
@@ -475,4 +474,5 @@ void get_frequency(int tile_ids[width][height], int tile_frequency[100])
 void debug_printer(int number)
 {
     printf("You've hit debug print number %d.\n", number);
+    system("PAUSE");
 }

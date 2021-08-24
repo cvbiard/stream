@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#define height 10
+#define height 11
 #define width 10
 #define tile_width 2
 #define tile_height 2
@@ -35,18 +35,16 @@ struct tile
 };
 
 /*NOTES
- * As a next step I want to rework the tile system to be scalable with a resolution. Right now all tiles are 6x3 and the screen is 10x10. I want to make both customizable, with the purpose of making the engine usable beyond
- * just this project.
- * Currently, tile sizes can be completely customized to any dimention, but due to movement anything different than a 10x10 screen breaks, you can walk out of bounds
+ * We did it, totally customizeable screen size and tile size :))
  */
 int calc_screen_size(int border);
 void map_pos(int linear_pos[(height*width)][2]);
 void print_screen_map();
 void mapping(int tile_map[(height*width)][(tile_height*tile_width)], int screen_size);
-void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[100], int *linear_ids, int pos, char player_tile[18], int screen_size);
+void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], struct tile* Tiles, int tile_ids[width][height], int tile_frequency[(width*height)], int *linear_ids, int pos, char player_tile[(tile_width*tile_height)], int screen_size);
 void print_screen(int *scrstr, int screen_size);
-void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[100]);
-int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[18], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[100], struct object *player, int screen_size);
+void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)]);
+int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[(tile_width*tile_height)], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)], struct object *player, int screen_size);
 void print_menu(char text[]);
-void get_frequency(int tile_ids[width][height], int tile_frequency[100]);
+void get_frequency(int tile_ids[width][height], int tile_frequency[(width*height)]);
 void debug_printer(int number);
