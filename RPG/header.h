@@ -5,7 +5,7 @@
 #define tile_width 4
 #define tile_height 2
 #define debug 't'
-#define global_amount_tiles 15
+#define global_amount_tiles 27
 #define global_amount_scenes 2
 #define trans_symbol 'X'
 #define blank_symbol 'x'
@@ -35,7 +35,7 @@ struct tile
 };
 
 /*NOTES
- * We did it, totally customizeable screen size and tile size :))
+ * Next we should streamline adding new tiles which is pretty spook ngl
  */
 int calc_screen_size(int border);
 void map_pos(int linear_pos[(height*width)][2]);

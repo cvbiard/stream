@@ -77,7 +77,7 @@ int main(void)
 	Door1.flags[0] = '\0';
 	Door1.flags[1] = 'd';
 	Door1.warp[0] = 1;
-	Door1.warp[1] = 84;
+	Door1.warp[1] = 369;
 
     struct tile Door2;
     Door2.id = 5;
@@ -85,7 +85,7 @@ int main(void)
     Door2.flags[0] = '\0';
     Door2.flags[1] = 'd';
     Door2.warp[0] = 0;
-    Door2.warp[1] = 66;
+    Door2.warp[1] = 273;
 
     struct tile Floor;
     Floor.id = 6;
@@ -99,11 +99,11 @@ int main(void)
     GrassPath.flags[0] = '\0';
     GrassPath.flags[1] = '\0';
 
-    struct tile GrassPathV;
-    GrassPathV.id = 8;
-    GrassPathV.file = "GrassPathV.txt";
-    GrassPathV.flags[0] = '\0';
-    GrassPathV.flags[1] = '\0';
+    struct tile GrassPathH;
+    GrassPathH.id = 8;
+    GrassPathH.file = "GrassPathH.txt";
+    GrassPathH.flags[0] = '\0';
+    GrassPathH.flags[1] = '\0';
 
     struct tile GrassPathBR;
     GrassPathBR.id = 9;
@@ -141,6 +141,78 @@ int main(void)
     GrassPathBL.flags[0] = '\0';
     GrassPathBL.flags[1] = '\0';
 
+    struct tile GrassPathC;
+    GrassPathC.id = 15;
+    GrassPathC.file = "GrassPathC.txt";
+    GrassPathC.flags[0] = '\0';
+    GrassPathC.flags[1] = '\0';
+
+    struct tile Brick;
+    Brick.id = 16;
+    Brick.file = "Brick.txt";
+    Brick.flags[0] = 'c';
+    Brick.flags[1] = '\0';
+
+    struct tile RoofBase;
+    RoofBase.id = 17;
+    RoofBase.file = "RoofBase.txt";
+    RoofBase.flags[0] = 'c';
+    RoofBase.flags[1] = '\0';
+
+    struct tile RoofL;
+    RoofL.id = 18;
+    RoofL.file = "RoofL.txt";
+    RoofL.flags[0] = 'c';
+    RoofL.flags[1] = '\0';
+
+    struct tile RoofR;
+    RoofR.id = 19;
+    RoofR.file = "RoofR.txt";
+    RoofR.flags[0] = 'c';
+    RoofR.flags[1] = '\0';
+
+    struct tile RoofT;
+    RoofT.id = 20;
+    RoofT.file = "RoofT.txt";
+    RoofT.flags[0] = 'c';
+    RoofT.flags[1] = '\0';
+
+    struct tile Blank;
+    Blank.id = 21;
+    Blank.file = "Blank.txt";
+    Blank.flags[0] = 'c';
+    Blank.flags[1] = '\0';
+
+    struct tile GrassPathCU;
+    GrassPathCU.id = 22;
+    GrassPathCU.file = "GrassPathCU.txt";
+    GrassPathCU.flags[0] = '\0';
+    GrassPathCU.flags[1] = '\0';
+
+    struct tile GrassPathCD;
+    GrassPathCD.id = 23;
+    GrassPathCD.file = "GrassPathCD.txt";
+    GrassPathCD.flags[0] = '\0';
+    GrassPathCD.flags[1] = '\0';
+
+    struct tile GrassPathCL;
+    GrassPathCL.id = 24;
+    GrassPathCL.file = "GrassPathCL.txt";
+    GrassPathCL.flags[0] = '\0';
+    GrassPathCL.flags[1] = '\0';
+
+    struct tile GrassPathCR;
+    GrassPathCR.id = 25;
+    GrassPathCR.file = "GrassPathCR.txt";
+    GrassPathCR.flags[0] = '\0';
+    GrassPathCR.flags[1] = '\0';
+
+    struct tile BrickWindow;
+    BrickWindow.id = 26;
+    BrickWindow.file = "BrickWindow.txt";
+    BrickWindow.flags[0] = '\0';
+    BrickWindow.flags[1] = '\0';
+
 
     //Add to global tiles array
 	struct tile* Tiles = (struct tile*) malloc(global_amount_tiles*sizeof(struct tile));
@@ -152,13 +224,25 @@ int main(void)
     *(Tiles+5) = Door2;
     *(Tiles+6) = Floor;
     *(Tiles+7) = GrassPath;
-    *(Tiles+8) = GrassPathV;
+    *(Tiles+8) = GrassPathH;
     *(Tiles+9) = GrassPathBR;
     *(Tiles+10) = TreeTop;
     *(Tiles+11) = TreeBottom;
     *(Tiles+12) = GrassPathTR;
     *(Tiles+13) = GrassPathTL;
     *(Tiles+14) = GrassPathBL;
+    *(Tiles+15) = GrassPathC;
+    *(Tiles+16) = Brick;
+    *(Tiles+17) = RoofBase;
+    *(Tiles+18) = RoofL;
+    *(Tiles+19) = RoofR;
+    *(Tiles+20) = RoofT;
+    *(Tiles+21) = Blank;
+    *(Tiles+22) = GrassPathCU;
+    *(Tiles+23) = GrassPathCD;
+    *(Tiles+24) = GrassPathCL;
+    *(Tiles+25) = GrassPathCR;
+    *(Tiles+26) = BrickWindow;
 
     //Declare global scenes
     struct asset FirstScreen;
@@ -204,7 +288,7 @@ int main(void)
 
 		if (input == 'p')
         {
-		    exit = 1;
+		    break;
         }
         if (input == 'r' && debug == 't')
         {
