@@ -6,6 +6,7 @@ int main(void)
 
     //Declare stack variables
     int scr_size = calc_screen_size(1);
+    int tile_amount = 3;
     //debug_printer(1);
 	char input = '\0';
 	int scrstr = (int) malloc(scr_size * sizeof(int));
@@ -215,35 +216,36 @@ int main(void)
 
 
     //Add to global tiles array
-	struct tile* Tiles = (struct tile*) malloc(global_amount_tiles*sizeof(struct tile));
-    *(Tiles) = Dummy;
-    *(Tiles+1) = Player;
-    *(Tiles+2) = Grass;
-    *(Tiles+3) = Wall;
-    *(Tiles+4) = Door1;
-    *(Tiles+5) = Door2;
-    *(Tiles+6) = Floor;
-    *(Tiles+7) = GrassPath;
-    *(Tiles+8) = GrassPathH;
-    *(Tiles+9) = GrassPathBR;
-    *(Tiles+10) = TreeTop;
-    *(Tiles+11) = TreeBottom;
-    *(Tiles+12) = GrassPathTR;
-    *(Tiles+13) = GrassPathTL;
-    *(Tiles+14) = GrassPathBL;
-    *(Tiles+15) = GrassPathC;
-    *(Tiles+16) = Brick;
-    *(Tiles+17) = RoofBase;
-    *(Tiles+18) = RoofL;
-    *(Tiles+19) = RoofR;
-    *(Tiles+20) = RoofT;
-    *(Tiles+21) = Blank;
-    *(Tiles+22) = GrassPathCU;
-    *(Tiles+23) = GrassPathCD;
-    *(Tiles+24) = GrassPathCL;
-    *(Tiles+25) = GrassPathCR;
-    *(Tiles+26) = BrickWindow;
+	struct tile* Tiles = (struct tile*) malloc(tile_amount*sizeof(struct tile));
+//    *(Tiles) = Dummy;
+//    *(Tiles+1) = Player;
+//    *(Tiles+2) = Grass;
+//    *(Tiles+3) = Wall;
+//    *(Tiles+4) = Door1;
+//    *(Tiles+5) = Door2;
+//    *(Tiles+6) = Floor;
+//    *(Tiles+7) = GrassPath;
+//    *(Tiles+8) = GrassPathH;
+//    *(Tiles+9) = GrassPathBR;
+//    *(Tiles+10) = TreeTop;
+//    *(Tiles+11) = TreeBottom;
+//    *(Tiles+12) = GrassPathTR;
+//    *(Tiles+13) = GrassPathTL;
+//    *(Tiles+14) = GrassPathBL;
+//    *(Tiles+15) = GrassPathC;
+//    *(Tiles+16) = Brick;
+//    *(Tiles+17) = RoofBase;
+//    *(Tiles+18) = RoofL;
+//    *(Tiles+19) = RoofR;
+//    *(Tiles+20) = RoofT;
+//    *(Tiles+21) = Blank;
+//    *(Tiles+22) = GrassPathCU;
+//    *(Tiles+23) = GrassPathCD;
+//    *(Tiles+24) = GrassPathCL;
+//    *(Tiles+25) = GrassPathCR;
+//    *(Tiles+26) = BrickWindow;
 
+    load_tiles(tile_amount, Tiles);
     //Declare global scenes
     struct asset FirstScreen;
     FirstScreen.file = "FirstScreen.txt";

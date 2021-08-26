@@ -27,8 +27,7 @@ struct asset
 struct tile
 {
 	int id;
-	char** layout;
-	FILE* asset;
+    char name[20];
 	char flags[2];
 	char* file;
 	int warp[2];
@@ -48,3 +47,4 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
 void print_menu(char text[]);
 void get_frequency(int tile_ids[width][height], int tile_frequency[(width*height)]);
 void debug_printer(int number);
+void load_tiles(int amount, struct tile* Tiles);

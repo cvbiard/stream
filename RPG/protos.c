@@ -478,3 +478,29 @@ void debug_printer(int number)
     printf("You've hit debug print number %d.\n", number);
     system("PAUSE");
 }
+void load_tiles(int amount, struct tile* Tiles)
+{
+    FILE *index = fopen("TileIndex.txt", "r");
+    for(int i = 0; i < amount; i++)
+    {
+        fscanf(index,"%s ", &Tiles[i].name);
+        fscanf(index,"%s ", &Tiles[i].file);
+
+        printf("%s\n", Tiles[i].name);
+        printf("%s\n", Tiles[i].file);
+    }
+system("PAUSE");
+
+//        (Tiles+i)->id = i;
+//        fscanf(index, "%s", (Tiles+i)->name);
+//        printf("%s\n", (Tiles+i)->name);
+//        fscanf(index, "%c", &((Tiles+i)->flags));
+//        printf("%c\n", (Tiles+i)->flags[0]);
+//        fscanf(index, "%c", &((Tiles+i)->flags[1]));
+//        printf("%c\n", (Tiles+i)->flags[1]);
+//        fscanf(index, "%d%*c", &((Tiles+i)->warp[0]));
+//        printf("%d\n", (Tiles+i)->warp[0]);
+//        fscanf(index, "%d%*c%*c", &((Tiles+i)->warp[1]));
+//        printf("%d\n", (Tiles+i)->warp[1]);
+    fclose(index);
+}
