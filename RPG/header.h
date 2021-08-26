@@ -5,6 +5,7 @@
 #define tile_width 4
 #define tile_height 2
 #define debug 't'
+#define MAX_NAME_SIZE 32
 #define global_amount_tiles 27
 #define global_amount_scenes 2
 #define trans_symbol 'X'
@@ -27,7 +28,7 @@ struct asset
 struct tile
 {
 	int id;
-    char name[20];
+    char* name;
 	char flags[2];
 	char* file;
 	int warp[2];

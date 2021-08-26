@@ -146,7 +146,7 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
         }
     }
 
-    //debug_printer(2);
+    //debug_printer(20);
     //system("PAUSE");
 
     //Sets the whole screen to # (35). If overwriting works, this should just leave a border of #
@@ -155,7 +155,7 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
         scrstr[i] = 35;
     }
 
-   // debug_printer(3);
+   //debug_printer(30);
 
     //Log the ID of each unique tile that will need to be loaded, as well as count how many
     for(int i = 0; i<(width*height); i++)
@@ -173,6 +173,7 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
             }
         }
     }
+
 
     //Opens the file for the current tile being loaded, and loads it into a linear array while eating newlines
     for(int i = 0; i<unique_count; i++)
@@ -198,11 +199,13 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
                 tick = tick+1;
             }
         }
-
+        //debug_printer(20);
 
         //Scrubs through tile ids in order, and if any of them match ids with the currently loaded tile, uses the tile_map to write each line of the tile to the right position in the screen string.
        for (int m = 0; m <(width*height); m++)
        {
+           //printf("%d\n", linear_ids[m]);
+           //debug_printer(40);
            if(linear_ids[m] == (Tiles+used_tiles[i])->id)
            {
                for(int p = 0; p<(tile_width*tile_height); p++)
@@ -220,6 +223,7 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
 
        }
     }
+    //debug_printer(30);
 
     //Updates the background map for future use to restore a tile on the screen that gets changed from moving tiles
     for (int i =0; i<screen_size; i++)
@@ -483,24 +487,30 @@ void load_tiles(int amount, struct tile* Tiles)
     FILE *index = fopen("TileIndex.txt", "r");
     for(int i = 0; i < amount; i++)
     {
-        fscanf(index,"%s ", &Tiles[i].name);
-        fscanf(index,"%s ", &Tiles[i].file);
+        char name[MAX_NAME_SIZE];
+        char file[MAX_NAME_SIZE];
+        char flag1 = '\0';
+        char flag2 = '\0';
+        int warp1 = 0;
+        int warp2 = 0;
+        int id = 0;
 
-        printf("%s\n", Tiles[i].name);
-        printf("%s\n", Tiles[i].file);
+        fscanf(index, "%d\n%s\n%s\n%c\n%c\n%d\n%d\n", &id, &name, &file, &flag1, &flag2, &warp1, &warp2);
+        (Tiles+i)->id = id;
+        Tiles[i].name = malloc(sizeof(char) * strlen(name));
+        Tiles[i].file = malloc(sizeof(char) * strlen(file));
+        strcpy((Tiles+i)->name, name);
+        strcpy((Tiles+i)->file, file);
+        (Tiles+i)->flags[0] = flag1;
+        (Tiles+i)->flags[1] = flag2;
+        (Tiles+i)->warp[0] = warp1;
+        (Tiles+i)->warp[1] = warp2;
+
+        memset(name, 0, sizeof(char)*strlen(name));
+        memset(file, 0, sizeof(char)*strlen(file));
+
+
     }
-system("PAUSE");
-
-//        (Tiles+i)->id = i;
-//        fscanf(index, "%s", (Tiles+i)->name);
-//        printf("%s\n", (Tiles+i)->name);
-//        fscanf(index, "%c", &((Tiles+i)->flags));
-//        printf("%c\n", (Tiles+i)->flags[0]);
-//        fscanf(index, "%c", &((Tiles+i)->flags[1]));
-//        printf("%c\n", (Tiles+i)->flags[1]);
-//        fscanf(index, "%d%*c", &((Tiles+i)->warp[0]));
-//        printf("%d\n", (Tiles+i)->warp[0]);
-//        fscanf(index, "%d%*c%*c", &((Tiles+i)->warp[1]));
-//        printf("%d\n", (Tiles+i)->warp[1]);
     fclose(index);
+    debug_printer(1);
 }
