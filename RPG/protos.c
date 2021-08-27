@@ -280,7 +280,7 @@ void load_scene(struct asset* scenes, int tile_ids[width][height], int tile_freq
 	fclose(scene_file);
     //tile_ids[pos[1]][pos[0]] = 1;
 }
-int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[(tile_width*tile_height)], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)], struct object *player, int screen_size)
+int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile_width)], char input, char player_tile[(tile_width*tile_height)], int *linear_ids, int linear_pos[(height*width)][2], struct tile* Tiles, struct asset* scenes, int tile_ids[width][height], int tile_frequency[(width*height)], struct object *player, int screen_size, int msg[1])
 {
     //Linear movement to a 2D space
     //One space down is +10
@@ -319,6 +319,15 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
                     scrstr[tile_map[(player->pos) -width][i]] = (int) player_tile[i];
                 }
             }
+            if((Tiles + linear_ids[((player->pos) - width)-width])->flags[2] == 'n')
+            {
+                msg[0] = (Tiles + linear_ids[((player->pos) - width)-width])->msg_id;
+                //debug_printer(100);
+            }
+            else
+            {
+                msg[0] = 0;
+            }
             return (player->pos) - width;
         }
     }
@@ -350,6 +359,15 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
                 {
                     scrstr[tile_map[(player->pos) + width][i]] = (int) player_tile[i];
                 }
+            }
+            if((Tiles + linear_ids[((player->pos) + width)-width])->flags[2] == 'n')
+            {
+                msg[0] = (Tiles + linear_ids[((player->pos) + width)-width])->msg_id;
+                //debug_printer(100);
+            }
+            else
+            {
+                msg[0] = 0;
             }
             return (player->pos) + width;
         }
@@ -383,6 +401,15 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
                     scrstr[tile_map[(player->pos) -1][i]] = (int) player_tile[i];
                 }
             }
+            if((Tiles + linear_ids[((player->pos) - 1)-width])->flags[2] == 'n')
+            {
+                msg[0] = (Tiles + linear_ids[((player->pos) - 1)-width])->msg_id;
+                //debug_printer(100);
+            }
+            else
+            {
+                msg[0] = 0;
+            }
             return (player->pos) - 1;
         }
     }
@@ -414,6 +441,15 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
                 {
                     scrstr[tile_map[(player->pos) + 1][i]] = (int) player_tile[i];
                 }
+            }
+            if((Tiles + linear_ids[((player->pos) + 1)-width])->flags[2] == 'n')
+            {
+                msg[0] = (Tiles + linear_ids[((player->pos) +1)-width])->msg_id;
+                //debug_printer(100);
+            }
+            else
+            {
+                msg[0] = 0;
             }
             return (player->pos) + 1;
         }
@@ -492,11 +528,13 @@ void read_tiles(int amount, struct tile* Tiles)
         char file[MAX_NAME_SIZE];
         char flag1 = '\0';
         char flag2 = '\0';
+        char flag3 = '\0';
         int warp1 = 0;
         int warp2 = 0;
         int id = 0;
+        int msg = 0;
 
-        fscanf(index, "%d\n%s\n%s\n%c\n%c\n%d\n%d\n", &id, &name, &file, &flag1, &flag2, &warp1, &warp2);
+        fscanf(index, "%d\n%s\n%s\n%c\n%c\n%c\n%d\n%d\n%d\n", &id, &name, &file, &flag1, &flag2, &flag3, &warp1, &warp2, &msg);
         (Tiles+i)->id = id;
         Tiles[i].name = malloc(sizeof(char) * strlen(name));
         Tiles[i].file = malloc(sizeof(char) * strlen(file));
@@ -504,8 +542,10 @@ void read_tiles(int amount, struct tile* Tiles)
         strcpy((Tiles+i)->file, file);
         (Tiles+i)->flags[0] = flag1;
         (Tiles+i)->flags[1] = flag2;
+        (Tiles+i)->flags[2] = flag3;
         (Tiles+i)->warp[0] = warp1;
         (Tiles+i)->warp[1] = warp2;
+        (Tiles+i)->msg_id = msg;
 
         memset(name, 0, sizeof(char)*strlen(name));
         memset(file, 0, sizeof(char)*strlen(file));
@@ -575,4 +615,15 @@ void ui_manager(int *scrstr, int *bgmap, int tile_ids[width][height], int pos, s
             scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
         }
     }
+}
+void read_message(int id)
+{
+    char message[MAX_MSG_SIZE] = " ";
+    char message2[MAX_MSG_SIZE] = "This is a test message from me, a test NPC!";
+    char msg_index[5][MAX_MSG_SIZE];
+
+    strcpy(msg_index[0], message);
+    strcpy(msg_index[1], message2);
+
+    print_menu(msg_index[id]);
 }

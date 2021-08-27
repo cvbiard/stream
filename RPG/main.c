@@ -6,6 +6,7 @@ int main(void)
 
     //Declare stack variables
     int scr_size = calc_screen_size(1);
+    int msg[1] = {0};
     int tile_amount = 0;
     int scene_amount = 0;
     FILE *ta = fopen("TileAmount.txt", "r");
@@ -44,7 +45,7 @@ int main(void)
     read_tiles(tile_amount, Tiles);
     for(int i = 0; i < tile_amount; i++)
     {
-        printf("%d\n%s\n%s\n%c\n%c\n%d\n%d\n",(Tiles+i)->id, (Tiles+i)->name, (Tiles+i)->file, (Tiles+i)->flags[0], (Tiles+i)->flags[1], (Tiles+i)->warp[0], (Tiles+i)->warp[1]);
+        printf("%d\n%s\n%s\n%c\n%c\n%c\n%d\n%d\n",(Tiles+i)->id, (Tiles+i)->name, (Tiles+i)->file, (Tiles+i)->flags[0], (Tiles+i)->flags[1], (Tiles+i)->flags[2], (Tiles+i)->warp[0], (Tiles+i)->warp[1]);
     }
 
     FILE* pt = fopen((Tiles+1)->file, "r");
@@ -143,11 +144,11 @@ int main(void)
             ui_manager(scrstr, bgmap, tile_ids, 88, *(Tiles+28), 1, tile_map);
         }
         ui_manager(scrstr, bgmap, tile_ids, 205, *(Tiles+30), 0, tile_map);
-        player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player, scr_size);
+        player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player, scr_size, msg);
 		input = '\0';
 		system("cls");
         print_screen(scrstr, scr_size);
-        print_menu(TestText);
+        read_message(msg[0]);
         if(debug == 't')
         {
             printf("Player position is %d.\n", player.pos);
