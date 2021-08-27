@@ -31,7 +31,7 @@ int main(void)
     //Add to global tiles array
 	struct tile* Tiles = (struct tile*) malloc(tile_amount*sizeof(struct tile));
 
-    load_tiles(tile_amount, Tiles);
+    read_tiles(tile_amount, Tiles);
     for(int i = 0; i < tile_amount; i++)
     {
         printf("%d\n%s\n%s\n%c\n%c\n%d\n%d\n",(Tiles+i)->id, (Tiles+i)->name, (Tiles+i)->file, (Tiles+i)->flags[0], (Tiles+i)->flags[1], (Tiles+i)->warp[0], (Tiles+i)->warp[1]);
@@ -104,7 +104,7 @@ int main(void)
             scanf("%d%*c", &added);
             tile_amount = tile_amount+added;
             added = 0;
-            load_tiles(tile_amount, Tiles);
+            read_tiles(tile_amount, Tiles);
             load_scene((scenes+0), tile_ids, tile_frequency);
             get_frequency(tile_ids, tile_frequency);
             screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile, scr_size);

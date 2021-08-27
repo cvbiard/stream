@@ -482,7 +482,7 @@ void debug_printer(int number)
     printf("You've hit debug print number %d.\n", number);
     system("PAUSE");
 }
-void load_tiles(int amount, struct tile* Tiles)
+void read_tiles(int amount, struct tile* Tiles)
 {
     FILE *index = fopen("TileIndex.txt", "r");
     for(int i = 0; i < amount; i++)

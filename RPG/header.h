@@ -48,4 +48,4 @@ int move(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_height*tile
 void print_menu(char text[]);
 void get_frequency(int tile_ids[width][height], int tile_frequency[(width*height)]);
 void debug_printer(int number);
-void load_tiles(int amount, struct tile* Tiles);
+void read_tiles(int amount, struct tile* Tiles);
