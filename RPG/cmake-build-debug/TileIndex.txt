@@ -194,3 +194,10 @@ c
 n
 -1
 -1
+28
+NewTile2
+NewTile2.txt
+n
+n
+-1
+-1

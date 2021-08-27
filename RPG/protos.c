@@ -231,6 +231,7 @@ void screen_manager(int *scrstr, int *bgmap, int tile_map[(height*width)][(tile_
         bgmap[i] = scrstr[i];
     }
 
+    //Here is where the player tile is printed on to the string... Can't do UI here since we don't want to rerun screen_manager every step but we could use this code in print_screen maybe.
     for(int i = 0; i < (tile_width*tile_height); i++)
     {
         if(player_tile[i] == trans_symbol)
@@ -513,4 +514,65 @@ void read_tiles(int amount, struct tile* Tiles)
     }
     fclose(index);
     debug_printer(1);
+}
+void read_scenes(int amount, struct asset* scenes)
+{
+    FILE *index = fopen("SceneIndex.txt", "r");
+    for(int i = 0; i < amount; i++)
+    {
+        char file[MAX_NAME_SIZE];
+        int id = 0;
+
+        fscanf(index, "%d\n%s\n", &id, &file);
+        (scenes+i)->id = id;
+        scenes[i].file = malloc(sizeof(char) * strlen(file));
+        strcpy((scenes+i)->file, file);
+
+        memset(file, 0, sizeof(char)*strlen(file));
+
+    }
+    fclose(index);
+    debug_printer(1);
+}
+void ui_manager(int *scrstr, int *bgmap, int tile_ids[width][height], int pos, struct tile element, int operation, int tile_map[(height*width)][(tile_height*tile_width)])
+{
+    if (operation == 0)
+    {
+        char linear_element[(tile_width*tile_height)];
+        FILE* pt = fopen(element.file, "r");
+        int tick = 0;
+        for(int i = 0; i<tile_height; i++)
+        {
+            for(int j = 0; j <tile_width;j++)
+            {
+                fscanf(pt, "%c", &linear_element[tick]);
+                tick = tick + 1;
+            }
+            fscanf(pt, "%*c");
+        }
+        fclose(pt);
+
+        for(int i = 0; i < (tile_width*tile_height); i++)
+        {
+            if(linear_element[i] == trans_symbol)
+            {
+                scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+            }
+            else if (linear_element[i] == blank_symbol)
+            {
+                scrstr[tile_map[pos][i]] = 32;
+            }
+            else
+            {
+                scrstr[tile_map[pos][i]] = (int) linear_element[i];
+            }
+        }
+    }
+    else if(operation == 1)
+    {
+        for(int i = 0; i < (tile_width*tile_height); i++)
+        {
+            scrstr[tile_map[pos][i]] = bgmap[tile_map[pos][i]];
+        }
+    }
 }

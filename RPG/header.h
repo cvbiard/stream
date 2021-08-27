@@ -22,7 +22,7 @@ struct object
 };
 struct asset
 {
-	FILE* visual_asset;
+	int id;
 	char* file;
 };
 struct tile
@@ -35,7 +35,8 @@ struct tile
 };
 
 /*NOTES
- * Next we should streamline adding new tiles which is pretty spook ngl
+ * Tiles and Scenes can be created at runtime which is dope af but maybe it's buggy idk
+ * Next lets add tile layers for UI elements. Looking into playertile printing for inspiration.
  */
 int calc_screen_size(int border);
 void map_pos(int linear_pos[(height*width)][2]);
@@ -49,3 +50,5 @@ void print_menu(char text[]);
 void get_frequency(int tile_ids[width][height], int tile_frequency[(width*height)]);
 void debug_printer(int number);
 void read_tiles(int amount, struct tile* Tiles);
+void read_scenes(int amount, struct asset* scenes);
+void ui_manager(int *scrstr, int *bgmap, int tile_ids[width][height], int pos, struct tile element, int operation, int tile_map[(height*width)][(tile_height*tile_width)]);

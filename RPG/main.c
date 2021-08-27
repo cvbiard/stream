@@ -6,7 +6,17 @@ int main(void)
 
     //Declare stack variables
     int scr_size = calc_screen_size(1);
-    int tile_amount = 28;
+    int tile_amount = 0;
+    int scene_amount = 0;
+    FILE *ta = fopen("TileAmount.txt", "r");
+    fscanf(ta, "%d", &tile_amount);
+    fclose(ta);
+    printf("%d\n", tile_amount);
+    debug_printer(100);
+    FILE *sa = fopen("SceneAmount.txt", "r");
+    fscanf(sa, "%d", &scene_amount);
+    fclose(sa);
+    printf("%d\n", scene_amount);
     //debug_printer(1);
 	char input = '\0';
 	int scrstr = (int) malloc(scr_size * sizeof(int));
@@ -56,10 +66,11 @@ int main(void)
     struct asset Inside;
     Inside.file = "Inside.txt";
 
-    struct asset* scenes = (struct asset*) malloc(global_amount_scenes*sizeof(struct asset));
-    *(scenes) = FirstScreen;
-    *(scenes+1) = Inside;
+    struct asset* scenes = (struct asset*) malloc(scene_amount*sizeof(struct asset));
+//    *(scenes) = FirstScreen;
+//    *(scenes+1) = Inside;
 
+    read_scenes(scene_amount, scenes);
     if(debug == 't')
     {
         printf("Made it here\n");
@@ -96,18 +107,25 @@ int main(void)
 
 		if (input == 'p')
         {
-		    break;
+            free(scrstr);
+            free(bgmap);
+            free(Tiles);
+            free(scenes);
+            return 0;
         }
         if (input == 'r' && debug == 't')
         {
-            printf("How many tiles have been added?\n");
-            scanf("%d%*c", &added);
-            tile_amount = tile_amount+added;
-            added = 0;
-            read_tiles(tile_amount, Tiles);
-            load_scene((scenes+0), tile_ids, tile_frequency);
-            get_frequency(tile_ids, tile_frequency);
-            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile, scr_size);
+            atexit(system("RPG.exe"));
+            break;
+//            FILE* ta2 = fopen("TileAmount.txt", "r");
+//            fscanf(ta2, "%d", &tile_amount);
+//            fclose(ta2);
+//            printf("%d\n", tile_amount);
+//            debug_printer(200);
+//            read_tiles(tile_amount, Tiles);
+//            load_scene((scenes+0), tile_ids, tile_frequency);
+//            get_frequency(tile_ids, tile_frequency);
+//            screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile, scr_size);
 
         }
         if (input == 't' && debug == 't')
@@ -116,10 +134,17 @@ int main(void)
             get_frequency(tile_ids, tile_frequency);
             screen_manager(scrstr, bgmap, tile_map, Tiles, tile_ids, tile_frequency, linear_ids, player.pos, player_tile, scr_size);
         }
+        if(input == 'u')
+        {
+            ui_manager(scrstr, bgmap, tile_ids, 88, *(Tiles+28), 0, tile_map);
+        }
+        if(input == 'i')
+        {
+            ui_manager(scrstr, bgmap, tile_ids, 88, *(Tiles+28), 1, tile_map);
+        }
         player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player, scr_size);
 		input = '\0';
 		system("cls");
-
         print_screen(scrstr, scr_size);
         print_menu(TestText);
         if(debug == 't')
