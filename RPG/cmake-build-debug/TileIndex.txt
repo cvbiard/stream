@@ -201,3 +201,17 @@ n
 n
 -1
 -1
+29
+NPC1
+NPC1.txt
+c
+n
+-1
+-1
+30
+TalkBox
+TalkBox.txt
+n
+n
+-1
+-1

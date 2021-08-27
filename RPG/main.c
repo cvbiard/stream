@@ -142,6 +142,7 @@ int main(void)
         {
             ui_manager(scrstr, bgmap, tile_ids, 88, *(Tiles+28), 1, tile_map);
         }
+        ui_manager(scrstr, bgmap, tile_ids, 205, *(Tiles+30), 0, tile_map);
         player.pos = move(scrstr, bgmap, tile_map, input, player_tile, linear_ids, linear_pos, Tiles, scenes, tile_ids, tile_frequency, &player, scr_size);
 		input = '\0';
 		system("cls");

@@ -35,8 +35,8 @@ struct tile
 };
 
 /*NOTES
- * Tiles and Scenes can be created at runtime which is dope af but maybe it's buggy idk
- * Next lets add tile layers for UI elements. Looking into playertile printing for inspiration.
+ * Right now we can print UI but I want to package it together with what it's associated with. For example, instead of having to hard code talkbox to be above the NPC on FirstScreen, we should
+ * be able to flag him as an npc and have the talkbox draw above him.
  */
 int calc_screen_size(int border);
 void map_pos(int linear_pos[(height*width)][2]);
